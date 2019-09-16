@@ -1,25 +1,34 @@
 <template>
   <section class="layers">
-    <ul>
-      <li>
-        Image
+    <draggable tag="ul" v-model="layers" group="layers" @start="drag=true" @end="drag=false" handle=".layer-drag">
+      <li v-for="(layer, index) in layers" :key="index">
+        Layer
         <div class="pull-right">
           <button><i class="glyphicon glyphicon-trash"></i></button>
           <button><i class="glyphicon glyphicon-eye-close"></i></button>
           <button><i class="glyphicon glyphicon-th"></i></button>
         </div>
       </li>
-      <li>
-        Text
-        <div class="pull-right">
-          <button><i class="glyphicon glyphicon-trash"></i></button>
-          <button><i class="glyphicon glyphicon-eye-close"></i></button>
-          <button><i class="glyphicon glyphicon-th"></i></button>
-        </div>
-      </li>
-    </ul>
+    </draggable>
   </section>
 </template>
+
+<script>
+import draggable from 'vuedraggable';
+
+export default {
+  components: {
+    draggable
+  },
+  computed: {
+    layers() {
+      return [];
+      // const pid = this.$route.params.pid;
+      // return this.$store.getters['workspace/layersByPage'](pid);
+    }
+  }
+}
+</script>
 
 <style scoped>
 .layers ul {

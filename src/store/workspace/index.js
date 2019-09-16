@@ -5,11 +5,17 @@ export default {
     pages: [],
   },
   getters: {
-    activePage() {
-      return this.state.pages.find(page => page.isActive);
-    }
+    pageExists: state => pid => {
+      const page = state.pages.find(page => page.id === pid);
+      return Boolean(page);
+    },
+    // layersByPage: (state, getters) => pid => {
+    //   const page = getters.pageById(pid);
+    //   return page.layers || [];
+    // }
   },
   mutations: {
+    // WORKSPACE OPERATIONS
     SET_TITLE(state, title) {
       state.title = title;
     },
@@ -25,11 +31,11 @@ export default {
     DELETE_PAGE(state, index) {
       state.pages.splice(index, 1);
     },
-    EDIT_PAGE(state, { title, index }) {
+    UPDATE_PAGE_TITLE(state, { title, index }) {
       state.pages[index].title = title;
     },
     SORT_PAGES(state, pages) {
-      state.pages = [ ...pages ];
+      state.pages = pages;
     }
   }
 }

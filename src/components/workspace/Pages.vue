@@ -3,9 +3,12 @@
     <h4>Pages</h4>
     <nav role="navigation">
       <draggable tag="ul" v-model="pages" group="pages" @start="drag=true" @end="drag=false" handle=".page-drag">
-        <li v-for="(page, index) in pages" :key="index">
-          <input type="text" @input="editPage($event, index)" :value="page.title">
+        <li v-for="(page, index) in pages" :key="index" :class="{ active: idIsParam(page.id) }">
+          <input type="text" @input="updatePageTitle($event, index)" :value="page.title">
           <div class="pull-right">
+            <router-link :to="{ name: 'page', params: { pid: page.id } }">
+              <i class="glyphicon glyphicon-eye-open"></i>
+            </router-link>
             <button @click="deletePage(index)"><i class="glyphicon glyphicon-trash"></i></button>
             <button class="page-drag"><i class="glyphicon glyphicon-th"></i></button>
           </div>
@@ -39,16 +42,19 @@ export default {
     addPage() {
       this.$store.commit('workspace/ADD_PAGE');
     },
-    deletePage(id) {
+    idIsParam(id) {
+      return id === this.$route.params.pid;
+    },
+    deletePage(index) {
       if (!confirm("Are you sure you want to delete this page?")) {
         return;
       }
 
-      this.$store.commit('workspace/DELETE_PAGE', id);
+      this.$store.commit('workspace/DELETE_PAGE', index);
     },
-    editPage(event, index) {
+    updatePageTitle(event, index) {
       const title = event.target.value;
-      this.$store.commit('workspace/EDIT_PAGE', { title, index });
+      this.$store.commit('workspace/UPDATE_PAGE_TITLE', { title, index });
     }
   }
 }
@@ -88,6 +94,21 @@ export default {
   display: block;
   padding: 8px 15px;
   text-decoration: none;
+}
+
+.pages nav ul li.active {
+  background: #ccc;
+  position: relative;
+}
+
+.pages nav ul li.active:after {
+  background: #7f4996;
+  content: "";
+  height: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 5px;
 }
 
 .pages nav ul li input {

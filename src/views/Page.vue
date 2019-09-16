@@ -1,7 +1,12 @@
 <template>
   <article class="page">
-    <Viewport />
-    <Tabs />
+    <template v-if="pageExists">
+      <Viewport />
+      <Tabs />
+    </template>
+    <template v-else>
+      <div class="alert alert-danger">Page not found.</div>
+    </template>
   </article>
 </template>
 
@@ -16,6 +21,12 @@ export default {
   components: {
     Tabs,
     Viewport
+  },
+  computed: {
+    pageExists() {
+      const pid = this.$route.params.pid;
+      return this.$store.getters['workspace/pageExists'](pid);
+    }
   }
 }
 </script>

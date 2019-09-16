@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import {
   Home,
+  NoPage,
   Page,
   Workspace
 } from '../views';
@@ -14,14 +15,17 @@ export function createRouter() {
     routes: [
       {
         component: Home,
-        name: 'home',
         path: '/'
       },
       {
         component: Workspace,
-        name: 'workspace',
         path: '/workspace/:wsid',
         children: [
+          {
+            component: NoPage,
+            name: 'nopage',
+            path: ''
+          },
           {
             component: Page,
             name: 'page',
