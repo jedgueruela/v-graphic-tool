@@ -2,28 +2,57 @@
   <section class="pages">
     <h4>Pages</h4>
     <nav role="navigation">
-      <ul>
-        <li>
-          <input type="text" value="Front">
+      <draggable tag="ul" v-model="pages" group="pages" @start="drag=true" @end="drag=false" handle=".page-drag">
+        <li v-for="(page, index) in pages" :key="index">
+          <input type="text" @input="editPage($event, index)" :value="page.title">
           <div class="pull-right">
-            <button><i class="glyphicon glyphicon-trash"></i></button>
-            <button><i class="glyphicon glyphicon-th"></i></button>
+            <button @click="deletePage(index)"><i class="glyphicon glyphicon-trash"></i></button>
+            <button class="page-drag"><i class="glyphicon glyphicon-th"></i></button>
           </div>
         </li>
-        <li>
-          <input type="text" value="Back">
-          <div class="pull-right">
-            <button><i class="glyphicon glyphicon-trash"></i></button>
-            <button><i class="glyphicon glyphicon-th"></i></button>
-          </div>
-        </li>
-      </ul>
+      </draggable>
     </nav>
     <div class="pages-actions">
-      <a href="#" class="btn btn-purple">Add New</a>
+      <button @click="addPage" class="btn btn-purple">Add Page</button>
     </div>
   </section>
 </template>
+
+<script>
+import draggable from 'vuedraggable';
+
+export default {
+  components: {
+    draggable
+  },
+  computed: {
+    pages: {
+      get() {
+        return this.$store.state.workspace.pages;
+      },
+      set(pages) {
+        this.$store.commit('workspace/SORT_PAGES', pages);
+      }
+    }
+  },
+  methods: {
+    addPage() {
+      this.$store.commit('workspace/ADD_PAGE');
+    },
+    deletePage(id) {
+      if (!confirm("Are you sure you want to delete this page?")) {
+        return;
+      }
+
+      this.$store.commit('workspace/DELETE_PAGE', id);
+    },
+    editPage(event, index) {
+      const title = event.target.value;
+      this.$store.commit('workspace/EDIT_PAGE', { title, index });
+    }
+  }
+}
+</script>
 
 <style scoped>
 .pages {
@@ -82,6 +111,6 @@
 }
 
 .pages .pages-actions .btn {
-  display: block;
+  width: 100%;
 }
 </style>

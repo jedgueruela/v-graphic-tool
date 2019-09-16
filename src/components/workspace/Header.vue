@@ -6,7 +6,7 @@
       </a>
       <form>
         <label for="workspace-title" class="sr-only">Title</label>
-        <input type="text" name="workspace-title" id="workspace-title" value="Untitled">
+        <input type="text" name="workspace-title" id="workspace-title" v-model="title">
       </form>
       <a href="#" class="btn btn-purple">Save Workspace</a>
     </div>
@@ -21,20 +21,32 @@ export default {
     return {
       logo
     }
+  },
+  computed: {
+    title: {
+      get() {
+        return this.$store.state.workspace.title;
+      },
+      set(title) {
+        this.$store.commit('workspace/SET_TITLE', title);
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
 header {
+  background: white;
   border-bottom: 1px solid #ddd;
-  box-shadow: 0 2px 5px #ddd;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   left: 0;
   padding-bottom: 10px;
   padding-top: 10px;
   position: fixed;
   right: 0;
   top: 0;
+  z-index: 99;
 }
 
 header .brand {
