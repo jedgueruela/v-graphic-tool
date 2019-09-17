@@ -4,10 +4,10 @@
       <button type="button" class="btn btn-default">
         <i class="glyphicon glyphicon-upload"></i> Upload image
       </button>
-      <button type="button" class="btn btn-default">
+      <button @click="addLogo" type="button" class="btn btn-default">
         <i class="glyphicon glyphicon-picture"></i> Logo
       </button>
-      <button type="button" class="btn btn-default">
+      <button @click="addText" type="button" class="btn btn-default">
         <i class="glyphicon glyphicon-text-size"></i> Text
       </button>
     </div>
@@ -29,6 +29,56 @@
     </div>
   </div>
 </template>
+
+<script>
+function createTextLayerObject(obj) {
+  const DEFAULTS = {
+    type: 'Text',
+    isActive: false,
+    config: {
+      draggable: true,
+      fill: '#000',
+      fontSize: 18,
+      name: new Date().getTime(),
+      rotation: 0,
+      scaleX: 1,
+      scaleY: 1,
+      text: '',
+      visible: true,
+      x: 0,
+      y: 0,
+      width: 150
+    }
+  };
+
+  return {
+    ...DEFAULTS,
+    ...obj,
+    config: {
+      ...DEFAULTS.config,
+      ...obj.config
+    }   
+  }
+}
+
+export default {
+  methods: {
+    addLogo() {
+      const pid = this.$route.params.pid;
+      const layer = {
+        name: 'Image',
+        selected: false
+      };
+      this.$store.commit('workspace/ADD_PAGE_LAYER', { layer, pid });
+    },
+    addText(text = 'Enter text here...') {
+      const pid = this.$route.params.pid;
+      const layer = createTextLayerObject({ text })
+      this.$store.commit('workspace/ADD_PAGE_LAYER', { layer, pid });
+    }
+  }
+}
+</script>
 
 <style scoped>
 .toolbar {

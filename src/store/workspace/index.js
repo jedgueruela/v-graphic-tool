@@ -1,3 +1,11 @@
+function findPage(state, pid) {
+  return state.pages.find(page => page.id === pid);
+}
+
+function pageLayers(state, pid) {
+  return findPage(state, pid).layers;
+}
+
 export default {
   namespaced: true,
   state: {
@@ -5,14 +13,9 @@ export default {
     pages: [],
   },
   getters: {
-    pageExists: state => pid => {
-      const page = state.pages.find(page => page.id === pid);
-      return Boolean(page);
-    },
-    // layersByPage: (state, getters) => pid => {
-    //   const page = getters.pageById(pid);
-    //   return page.layers || [];
-    // }
+    page: state => pid => {
+      return findPage(state, pid);
+    }
   },
   mutations: {
     // WORKSPACE OPERATIONS
@@ -25,17 +28,29 @@ export default {
       state.pages.push({
         id: new Date().getTime(),
         title: 'Untitled Page',
-        isActive: true
+        layers: []
       });
     },
-    DELETE_PAGE(state, index) {
-      state.pages.splice(index, 1);
+    DELETE_PAGE(state, pid) {
+      state.pages = state.pages.filter(page => page.id !== pid);
     },
-    UPDATE_PAGE_TITLE(state, { title, index }) {
-      state.pages[index].title = title;
+    UPDATE_PAGE_TITLE(state, { title, pid }) {
+      const page = findPage(state, pid);
+      page.title = title;
     },
     SORT_PAGES(state, pages) {
       state.pages = pages;
+    },
+
+    // LAYERS OPERATIONS
+    ADD_PAGE_LAYER(state, { layer, pid }) {
+      pageLayers(state, pid).push(layer);
+    },
+    DELETE_PAGE_LAYER(state, { index, pid }) {
+      pageLayers(state, pid).splice(index, 1);
+    },
+    SORT_PAGE_LAYERS(state, { layers, pid }) {
+      findPage(state, pid).layers = layers;
     }
   }
 }

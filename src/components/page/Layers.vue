@@ -1,12 +1,12 @@
 <template>
   <section class="layers">
-    <draggable tag="ul" v-model="layers" group="layers" @start="drag=true" @end="drag=false" handle=".layer-drag">
-      <li v-for="(layer, index) in layers" :key="index">
-        Layer
+    <draggable tag="ul" v-model="layerList" group="layerList" @start="drag=true" @end="drag=false" handle=".layer-drag">
+      <li v-for="(layer, index) in layerList" :key="index">
+        {{ layer.type }}
         <div class="pull-right">
-          <button><i class="glyphicon glyphicon-trash"></i></button>
           <button><i class="glyphicon glyphicon-eye-close"></i></button>
-          <button><i class="glyphicon glyphicon-th"></i></button>
+          <button @click="deleteLayer(index)"><i class="glyphicon glyphicon-trash"></i></button>
+          <button class="layer-drag"><i class="glyphicon glyphicon-th"></i></button>
         </div>
       </li>
     </draggable>
@@ -17,14 +17,26 @@
 import draggable from 'vuedraggable';
 
 export default {
+  props: ['layers'],
   components: {
     draggable
   },
   computed: {
-    layers() {
-      return [];
-      // const pid = this.$route.params.pid;
-      // return this.$store.getters['workspace/layersByPage'](pid);
+    layerList: {
+      get() {
+        return this.layers;
+      },
+      set(layers) {
+        this.$store.commit('workspace/SORT_PAGE_LAYERS', { layers, pid: this.pageID });
+      }
+    },
+    pageID() {
+      return this.$route.params.pid;
+    },
+  },
+  methods: {
+    deleteLayer(index) {
+      this.$store.commit('workspace/DELETE_PAGE_LAYER', { index, pid: this.pageID });
     }
   }
 }

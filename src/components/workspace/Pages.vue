@@ -3,13 +3,13 @@
     <h4>Pages</h4>
     <nav role="navigation">
       <draggable tag="ul" v-model="pages" group="pages" @start="drag=true" @end="drag=false" handle=".page-drag">
-        <li v-for="(page, index) in pages" :key="index" :class="{ active: idIsParam(page.id) }">
-          <input type="text" @input="updatePageTitle($event, index)" :value="page.title">
+        <li v-for="page in pages" :key="page.id" :class="{ active: idIsParam(page.id) }">
+          <input type="text" @input="updatePageTitle($event, page.id)" :value="page.title">
           <div class="pull-right">
             <router-link :to="{ name: 'page', params: { pid: page.id } }">
               <i class="glyphicon glyphicon-eye-open"></i>
             </router-link>
-            <button @click="deletePage(index)"><i class="glyphicon glyphicon-trash"></i></button>
+            <button @click="deletePage(page.id)"><i class="glyphicon glyphicon-trash"></i></button>
             <button class="page-drag"><i class="glyphicon glyphicon-th"></i></button>
           </div>
         </li>
@@ -45,16 +45,16 @@ export default {
     idIsParam(id) {
       return id === this.$route.params.pid;
     },
-    deletePage(index) {
+    deletePage(pid) {
       if (!confirm("Are you sure you want to delete this page?")) {
         return;
       }
 
-      this.$store.commit('workspace/DELETE_PAGE', index);
+      this.$store.commit('workspace/DELETE_PAGE', pid);
     },
-    updatePageTitle(event, index) {
+    updatePageTitle(event, pid) {
       const title = event.target.value;
-      this.$store.commit('workspace/UPDATE_PAGE_TITLE', { title, index });
+      this.$store.commit('workspace/UPDATE_PAGE_TITLE', { title, pid });
     }
   }
 }

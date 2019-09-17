@@ -1,7 +1,11 @@
-import Tabs from './Tabs';
-import Viewport from './Viewport';
+import Filters from './Filters';
+import Layers from './Layers';
+import Canvas from './Canvas';
+import Toolbar from './Toolbar';
 
 export {
-  Tabs,
-  Viewport
+  Filters,
+  Layers,
+  Canvas,
+  Toolbar
 }
