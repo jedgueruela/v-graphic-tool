@@ -1,11 +1,15 @@
 <template>
   <section class="layers">
     <draggable tag="ul" v-model="layerList" group="layerList" @start="drag=true" @end="drag=false" handle=".layer-drag">
-      <li v-for="(layer, index) in layerList" :key="index">
+      <li 
+        v-for="(layer, index) in layerList"
+        :key="index"
+        :class="{ active: layer.isActive, visible: layer.config.visible }"
+        @click="activateLayer(index)">
         {{ layer.type }}
         <div class="pull-right">
-          <button><i class="glyphicon glyphicon-eye-close"></i></button>
-          <button @click="deleteLayer(index)"><i class="glyphicon glyphicon-trash"></i></button>
+          <button class="layer-hide" @click.stop="hideLayer(index)"><i class="glyphicon glyphicon-eye-close"></i></button>
+          <button @click.stop="deleteLayer(index)"><i class="glyphicon glyphicon-trash"></i></button>
           <button class="layer-drag"><i class="glyphicon glyphicon-th"></i></button>
         </div>
       </li>
@@ -35,8 +39,23 @@ export default {
     },
   },
   methods: {
+    activateLayer(index) {
+      this.$store.commit('workspace/ACTIVATE_PAGE_LAYER', {
+        index,
+        pid: this.pageID
+      });
+    },
     deleteLayer(index) {
-      this.$store.commit('workspace/DELETE_PAGE_LAYER', { index, pid: this.pageID });
+      this.$store.commit('workspace/DELETE_PAGE_LAYER', {
+        index,
+        pid: this.pageID
+      });
+    },
+    hideLayer(index) {
+      this.$store.commit('workspace/HIDE_PAGE_LAYER', {
+        index,
+        pid: this.pageID
+      });
     }
   }
 }
@@ -56,6 +75,15 @@ export default {
   padding: 8px;
 }
 
+.layers ul li.active {
+  background: #ccc;
+}
+
+.layers ul li:not(.visible) button.layer-hide,
+.layers ul li:hover button.layer-hide {
+  visibility: visible;
+}
+
 .layers ul li:first-of-type {
   border-top: 1px solid #d5d5d5;
 }
@@ -63,5 +91,9 @@ export default {
 .layers ul li button {
   background: none;
   border: none;
+}
+
+.layers ul li button.layer-hide {
+  visibility: hidden;
 }
 </style>

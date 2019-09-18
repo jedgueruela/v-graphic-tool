@@ -20,18 +20,18 @@
         <span class="sr-only">Toggle Dropdown</span>
       </button>
       <ul class="dropdown-menu">
-        <li><a href="#">Action</a></li>
-        <li><a href="#">Another action</a></li>
-        <li><a href="#">Something else here</a></li>
-        <li role="separator" class="divider"></li>
-        <li><a href="#">Separated link</a></li>
+        <li><a href="javascript:void(0)" @click="addText($event, '|COMPANY_NAME|')">Name</a></li>
+        <li><a href="javascript:void(0)" @click="addText($event, '|COMPANY_ADDRESS|')">Address</a></li>
+        <li><a href="javascript:void(0)" @click="addText($event, '|COMPANY_EMAIL|')">Email</a></li>
+        <li><a href="javascript:void(0)" @click="addText($event, '|COMPANY_PHONE|')">Phone Number</a></li>
+        <li><a href="javascript:void(0)" @click="addText($event, '|COMPANY_WEBSITE|')">Website</a></li>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
-function createTextLayerObject(obj) {
+function textLayerObject(obj) {
   const DEFAULTS = {
     type: 'Text',
     isActive: false,
@@ -39,7 +39,7 @@ function createTextLayerObject(obj) {
       draggable: true,
       fill: '#000',
       fontSize: 18,
-      name: new Date().getTime(),
+      name: new Date().getTime().toString(),
       rotation: 0,
       scaleX: 1,
       scaleY: 1,
@@ -47,7 +47,7 @@ function createTextLayerObject(obj) {
       visible: true,
       x: 0,
       y: 0,
-      width: 150
+      width: 200
     }
   };
 
@@ -61,20 +61,60 @@ function createTextLayerObject(obj) {
   }
 }
 
+function imageLayerObject(obj) {
+  const DEFAULTS = {
+    type: 'Image',
+    src: 'https://placehold.it/300x300',
+    isActive: false,
+    config: {
+      draggable: true,
+      height: 300,
+      image: null,
+      name: new Date().getTime().toString(),
+      rotation: 0,
+      scaleX: 1,
+      scaleY: 1,
+      visible: true,
+      x: 0,
+      y: 0,
+      width: 300
+    }
+  }
+
+  return {
+    ...DEFAULTS,
+    ...obj,
+    config: {
+      ...DEFAULTS.config,
+      ...obj.config
+    }   
+  }
+}
+
 export default {
+  computed: {
+    pageID() {
+      return this.$route.params.pid;
+    },
+  },
   methods: {
     addLogo() {
-      const pid = this.$route.params.pid;
-      const layer = {
-        name: 'Image',
-        selected: false
-      };
-      this.$store.commit('workspace/ADD_PAGE_LAYER', { layer, pid });
+      this.$store.commit('workspace/ADD_PAGE_LAYER', {
+        layer: imageLayerObject({
+          src: 'https://placehold.it/100x60',
+          config: {
+            height: 60,
+            width: 100
+          }
+        }),
+        pid: this.pageID
+      });
     },
-    addText(text = 'Enter text here...') {
-      const pid = this.$route.params.pid;
-      const layer = createTextLayerObject({ text })
-      this.$store.commit('workspace/ADD_PAGE_LAYER', { layer, pid });
+    addText(event, text = 'Enter text here...') {
+      this.$store.commit('workspace/ADD_PAGE_LAYER', {
+        layer: textLayerObject({ config: { text } }),
+        pid: this.pageID
+      });
     }
   }
 }

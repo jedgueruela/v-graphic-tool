@@ -43,14 +43,35 @@ export default {
     },
 
     // LAYERS OPERATIONS
+    ACTIVATE_PAGE_LAYER(state, { index, pid }) {
+      const layers = pageLayers(state, pid);
+
+      layers.find(layer => {
+        if (layer.isActive === true) {
+          layer.isActive = false;
+          return true;
+        }
+      });
+
+      layers[index].isActive = true;
+    },
     ADD_PAGE_LAYER(state, { layer, pid }) {
       pageLayers(state, pid).push(layer);
     },
     DELETE_PAGE_LAYER(state, { index, pid }) {
       pageLayers(state, pid).splice(index, 1);
     },
+    HIDE_PAGE_LAYER(state, { index, pid }) {
+      const layer = pageLayers(state, pid)[index];
+      const layerConfig = layer.config;
+      layerConfig.visible = !layerConfig.visible;
+    },
     SORT_PAGE_LAYERS(state, { layers, pid }) {
       findPage(state, pid).layers = layers;
+    },
+    UPDATE_PAGE_LAYER(state, { config, index, pid }) {
+      const layerConfig = pageLayers(state, pid)[index].config;
+      Object.assign(layerConfig, config);
     }
   }
 }
