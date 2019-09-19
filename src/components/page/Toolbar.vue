@@ -1,7 +1,8 @@
 <template>
   <div class="toolbar">
+    <input type="file" class="hidden" ref="fileUpload" @change="uploadFile" accept="image/jpeg,image/png">
     <div class="btn-group" role="group" aria-label="Toolbar">
-      <button type="button" class="btn btn-default">
+      <button @click="triggerUpload" type="button" class="btn btn-default" :class="{ disabled: uploading }">
         <i class="glyphicon glyphicon-upload"></i> Upload image
       </button>
       <button @click="addLogo" type="button" class="btn btn-default">
@@ -92,6 +93,11 @@ function imageLayerObject(obj) {
 }
 
 export default {
+  data() {
+    return {
+      uploading: false,
+    }
+  },
   computed: {
     pageID() {
       return this.$route.params.pid;
@@ -115,6 +121,12 @@ export default {
         layer: textLayerObject({ config: { text } }),
         pid: this.pageID
       });
+    },
+    triggerUpload() {
+      this.$refs.fileUpload.click();
+    },
+    uploadFile({ target: { files } }) {
+      this.uploading = true;
     }
   }
 }
