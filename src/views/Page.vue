@@ -4,7 +4,7 @@
       <section class="viewport">
         <Toolbar />
         <div class="stage">
-          <Canvas v-if="pageHasLayers" :layers="page.layers" />
+          <Canvas v-if="hasLayers" :layers="page.layers" />
         </div>
       </section>
       <div class="lftabs">
@@ -22,11 +22,14 @@
         </ul>
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane active" id="layers">
-            <Layers v-if="pageHasLayers" :layers="page.layers" />
+            <Layers v-if="hasLayers" :layers="page.layers" />
             <p v-else>No layer found.</p>
           </div>
           <div role="tabpanel" class="tab-pane" id="filters">
-            <Filters />
+            <Filters v-if="activeLayer" :layer="activeLayer.config" :index="activeLayer.index" :pid="pageID" />
+            <template v-else>
+              <p>No layer selected.</p>
+            </template>
           </div>
         </div>
       </div>
@@ -54,12 +57,33 @@ export default {
     Toolbar
   },
   computed: {
+    activeLayer() {
+      const layers = this.page.layers;
+
+      let config = null;
+      let index = 0;
+
+      for (let i = 0; i < layers.length; i++) {
+        if (layers[i].isActive === true) {
+          config = layers[i];
+          index = i;
+          break;
+        }
+      }
+
+      return (config === null)
+        ? false
+        : { config, index };
+    },
+    hasLayers() {
+      return (this.page.layers.length) ? true : false;
+    },
     page() {
       const pid = this.$route.params.pid;
       return this.$store.getters['workspace/page'](pid);
     },
-    pageHasLayers() {
-      return (this.page.layers.length) ? true : false;
+    pageID() {
+      return this.$route.params.pid;
     }
   }
 }

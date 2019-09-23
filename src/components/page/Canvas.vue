@@ -49,15 +49,20 @@ export default {
   },
   computed: {
     layerList() {
-      return this.layers.map(layer => {
-        if (layer.type === 'Image') {
-          const image = new Image();
-          image.src = layer.src;
-          image.onload = () => layer.config.image = image;
-        }
+      return this.layers;
+      // return this.layers.map(layer => {
+      //   if (layer.type === 'Image') {
+      //     const image = new Image();
+      //     image.src = layer.src;
+      //     image.onload = () => {
+      //       layer.config.image = image;
+      //       layer.config.height = image.height;
+      //       layer.config.width = image.width;
+      //     }
+      //   }
 
-        return layer;
-      });
+      //   return layer;
+      // });
     },
     pageID() {
       return this.$route.params.pid;

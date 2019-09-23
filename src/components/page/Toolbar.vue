@@ -1,6 +1,6 @@
 <template>
   <div class="toolbar">
-    <input type="file" class="hidden" ref="fileUpload" @change="uploadFile" accept="image/jpeg,image/png">
+    <input type="file" class="hidden" ref="fileUpload" @change="uploadBackground" accept="image/jpeg,image/png">
     <div class="btn-group" role="group" aria-label="Toolbar">
       <button @click="triggerUpload" type="button" class="btn btn-default" :class="{ disabled: uploading }">
         <i class="glyphicon glyphicon-upload"></i> Upload image
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 function textLayerObject(obj) {
   const DEFAULTS = {
     type: 'Text',
@@ -65,11 +67,9 @@ function textLayerObject(obj) {
 function imageLayerObject(obj) {
   const DEFAULTS = {
     type: 'Image',
-    src: 'https://placehold.it/300x300',
     isActive: false,
     config: {
       draggable: true,
-      height: 300,
       image: null,
       name: new Date().getTime().toString(),
       rotation: 0,
@@ -77,8 +77,7 @@ function imageLayerObject(obj) {
       scaleY: 1,
       visible: true,
       x: 0,
-      y: 0,
-      width: 300
+      y: 0
     }
   }
 
@@ -105,16 +104,7 @@ export default {
   },
   methods: {
     addLogo() {
-      this.$store.commit('workspace/ADD_PAGE_LAYER', {
-        layer: imageLayerObject({
-          src: 'https://placehold.it/100x60',
-          config: {
-            height: 60,
-            width: 100
-          }
-        }),
-        pid: this.pageID
-      });
+      this.createImageLayer('https://placehold.it/100x60');
     },
     addText(event, text = 'Enter text here...') {
       this.$store.commit('workspace/ADD_PAGE_LAYER', {
@@ -122,11 +112,50 @@ export default {
         pid: this.pageID
       });
     },
+    createImageLayer(src) {
+      const image = new Image();
+        
+      image.src = src;
+      image.onload = () => {
+        this.$store.commit('workspace/ADD_PAGE_LAYER', {
+          layer: imageLayerObject({
+            src,
+            config: {
+              image,
+              height: image.height,
+              width: image.width
+            }
+          }),
+          pid: this.pageID
+        });
+      };
+    },
     triggerUpload() {
       this.$refs.fileUpload.click();
     },
-    uploadFile({ target: { files } }) {
+    uploadBackground({ target: { files } }) {
       this.uploading = true;
+
+      const formData = new FormData();
+
+      formData.append('image', files[0]);
+
+      axios.post(
+        'http://localhost:8000/leaflets/upload',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      ).then(resp => {
+        this.createImageLayer(resp.data.downloadURL);
+      }).catch(err => {
+        alert('Something went wrong! Make sure your file is less than 2MB and or try again later.');
+        console.error(err);
+      }).finally(() => {
+        this.uploading = false;
+      });
     }
   }
 }
