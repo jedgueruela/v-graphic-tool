@@ -35,6 +35,7 @@
 import axios from 'axios';
 
 function textLayerObject(obj) {
+  const time = new Date().getTime().toString();
   const DEFAULTS = {
     type: 'Text',
     isActive: false,
@@ -42,7 +43,7 @@ function textLayerObject(obj) {
       draggable: true,
       fill: '#000',
       fontSize: 18,
-      name: new Date().getTime().toString(),
+      name: `object-${time}`,
       rotation: 0,
       scaleX: 1,
       scaleY: 1,
@@ -65,13 +66,14 @@ function textLayerObject(obj) {
 }
 
 function imageLayerObject(obj) {
+  const time = new Date().getTime().toString();
   const DEFAULTS = {
     type: 'Image',
     isActive: false,
     config: {
       draggable: true,
       image: null,
-      name: new Date().getTime().toString(),
+      name: `object-${time}`,
       rotation: 0,
       scaleX: 1,
       scaleY: 1,
