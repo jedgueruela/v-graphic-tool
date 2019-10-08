@@ -150,13 +150,12 @@ export default {
 
       // find possible snapping lines
       const lineGuideStops = this.getLineGuideStops(event.target);
+
       // find snapping points of current object
       const itemBounds = this.getObjectSnappingEdges(event.target);
 
       // now find where can we snap current object
       const guides = this.getGuides(lineGuideStops, itemBounds);
-
-      console.log('guides', guides);
 
       // do nothing of no snapping
       if (!guides.length) {
@@ -223,7 +222,8 @@ export default {
       var horizontal = [0, 500 / 2, 500];
 
       // and we snap over edges and center of each object on the canvas
-      this.$refs.layer.getStage().parent.find('.object-*').forEach(guideItem => {
+      this.$refs.layer.getNode().children.forEach(guideItem => {
+        // return;
         if (guideItem === skipShape) {
           return;
         }
